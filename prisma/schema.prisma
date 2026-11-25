@@ -1,0 +1,44 @@
+// Modello dati del negozio.
+// Regola d'oro: i PREZZI si salvano SEMPRE in centesimi (Int), mai come float.
+// 0.1 + 0.2 = 0.30000000000000004 → con i soldi non ce lo possiamo permettere.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // in produzione: "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  slug     String    @unique // usato negli URL: /categorie/abbigliamento
+  products Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String
+  imageUrl    String
+  active      Boolean   @default(true) // "spegnere" un prodotto senza cancellarlo
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  variants    Variant[]
+  createdAt   DateTime  @default(now())
+}
+
+// La VARIANTE è ciò che si compra davvero: "Maglietta Blu, taglia M".
+// Ognuna ha il suo codice (SKU), prezzo e scorta di magazzino.
+model Variant {
+  id         Int     @id @default(autoincrement())
+  productId  Int
+  product    Product @relation(fields: [productId], references: [id])
+  sku        String  @unique // Stock Keeping Unit, es. "TSHIRT-BLU-M"
+  name       String // es. "Blu / M"
+  priceCents Int // 1990 = 19,90 €
+  stock      Int     @default(0)
+}
