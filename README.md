@@ -4,7 +4,15 @@ Un e-commerce costruito passo per passo per imparare come funziona davvero.
 
 **Stack:** Next.js 15 · TypeScript · Prisma · SQLite (→ PostgreSQL in produzione) · Stripe (dalla Lezione 4)
 
-## Avvio
+## Avvio nel browser (consigliato, niente da installare)
+
+1. Su GitHub clicca **Code → Codespaces → Create codespace on main**
+2. Aspetta 2-3 minuti: installa tutto, crea il database e avvia il sito da solo
+3. Il negozio si apre in un'anteprima (oppure: scheda **Porte** → porta 3000 → 🌐)
+
+Quando hai finito chiudi la scheda: il Codespace si ferma da solo dopo 30 minuti di inattività.
+
+## Avvio in locale
 
 ```bash
 npm install

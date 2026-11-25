@@ -1,0 +1,23 @@
+{
+  // Configurazione per GitHub Codespaces: il negozio gira nel cloud, nel browser.
+  "name": "Negozio",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+
+  // Eseguito una sola volta, alla creazione del Codespace:
+  // installa le dipendenze, crea il file .env e il database con i prodotti di esempio.
+  "postCreateCommand": "npm install && cp -n .env.example .env && npx prisma migrate deploy && npm run db:seed",
+
+  // Eseguito ogni volta che apri il Codespace: avvia il sito.
+  "postAttachCommand": "npm run dev",
+
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Negozio", "onAutoForward": "openPreview" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["Prisma.prisma", "dbaeumer.vscode-eslint"]
+    }
+  }
+}
