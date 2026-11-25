@@ -2,7 +2,8 @@
 // [slug] tra parentesi quadre = segmento dinamico dell'URL.
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { formatPrice } from "@/lib/money";
+import { MAX_QTY_PER_ITEM } from "@/lib/cart";
+import { AddToCartForm } from "./AddToCartForm";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (!product || !product.active) notFound(); // → pagina 404
 
+  // Al Client Component passiamo solo i campi necessari (non l'intero record del DB):
+  // tutto ciò che passa come prop finisce nell'HTML/JS inviato al browser.
+  const variants = product.variants.map(({ id, name, priceCents, stock }) => ({ id, name, priceCents, stock }));
+
   return (
     <div className="product">
       <img src={product.imageUrl} alt={product.name} />
@@ -22,20 +27,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <small>{product.category.name}</small>
         <h1>{product.name}</h1>
         <p>{product.description}</p>
-
-        <h3>Varianti</h3>
-        <ul className="variants">
-          {product.variants.map((v) => (
-            <li key={v.id}>
-              <span>{v.name}</span>
-              <strong>{formatPrice(v.priceCents)}</strong>
-              <span className={v.stock > 0 ? "ok" : "soldout"}>
-                {v.stock === 0 ? "Esaurito" : v.stock <= 3 ? `Solo ${v.stock} rimasti!` : "Disponibile"}
-              </span>
-            </li>
-          ))}
-        </ul>
-        {/* Lezione 2: pulsante "Aggiungi al carrello" */}
+        <AddToCartForm variants={variants} maxQty={MAX_QTY_PER_ITEM} />
       </div>
     </div>
   );

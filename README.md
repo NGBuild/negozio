@@ -26,8 +26,8 @@ npm run dev              # → http://localhost:3000
 | # | Lezione | Stato |
 |---|---|---|
 | 1 | Modello dati e catalogo | ✅ |
-| 2 | Carrello | ⏳ |
-| 3 | Checkout e ordini | |
+| 2 | Carrello | ✅ |
+| 3 | Checkout e ordini | ⏳ |
 | 4 | Pagamenti con Stripe e webhook | |
 | 5 | Magazzino e concorrenza | |
 | 6 | Pannello admin | |
@@ -41,3 +41,12 @@ npm run dev              # → http://localhost:3000
 - **Slug negli URL** per leggibilità e SEO.
 - **`active` invece di cancellare:** i vecchi ordini devono continuare a funzionare.
 - **Server Components:** la pagina legge il database direttamente sul server.
+
+## Concetti chiave della Lezione 2
+
+- **Carrello nel database, id nel cookie:** il cookie `cart_id` è `httpOnly`, `sameSite=lax` e contiene un id casuale (cuid), impossibile da indovinare.
+- **Non fidarti mai del browser:** dal form arrivano solo variante e quantità; prezzo, stock e proprietario del carrello li verifica il server.
+- **Ogni query filtra per `cartId`:** altrimenti chiunque potrebbe modificare righe di carrelli altrui.
+- **Il carrello non salva i prezzi:** mostra sempre quelli attuali. L'ordine li "congelerà" (Lezione 3).
+- **Il carrello non riserva lo stock:** la verifica definitiva avviene al checkout (Lezione 5).
+- **Server Actions + `<form>`:** funziona anche senza JavaScript (progressive enhancement).
