@@ -27,8 +27,8 @@ npm run dev              # → http://localhost:3000
 |---|---|---|
 | 1 | Modello dati e catalogo | ✅ |
 | 2 | Carrello | ✅ |
-| 3 | Checkout e ordini | ⏳ |
-| 4 | Pagamenti con Stripe e webhook | |
+| 3 | Checkout e ordini | ✅ |
+| 4 | Pagamenti con Stripe e webhook | ⏳ |
 | 5 | Magazzino e concorrenza | |
 | 6 | Pannello admin | |
 | 7 | Email, spedizioni, IVA | |
@@ -50,3 +50,13 @@ npm run dev              # → http://localhost:3000
 - **Il carrello non salva i prezzi:** mostra sempre quelli attuali. L'ordine li "congelerà" (Lezione 3).
 - **Il carrello non riserva lo stock:** la verifica definitiva avviene al checkout (Lezione 5).
 - **Server Actions + `<form>`:** funziona anche senza JavaScript (progressive enhancement).
+
+## Concetti chiave della Lezione 3
+
+- **Snapshot:** l'ordine COPIA nomi, SKU e prezzi. È un documento storico, non deve cambiare se cambi il catalogo.
+- **Transazione:** scalare il magazzino, creare l'ordine e svuotare il carrello avvengono "tutto o niente".
+- **Update condizionale:** `UPDATE ... SET stock = stock - N WHERE stock >= N` impedisce di vendere pezzi che non esistono.
+- **Totali calcolati solo sul server** (`lib/pricing.ts`, un'unica fonte di verità). Il totale "visto" dal cliente serve solo a rilevare cambi di prezzo.
+- **Validazione con Zod** e messaggi d'errore per campo; i dati vengono anche normalizzati (es. provincia in maiuscolo).
+- **IVA scorporata** dal prezzo (×22/122) e salvata nell'ordine.
+- **Codice del Consumo:** pulsante «Ordine con obbligo di pagare» e accettazione delle condizioni registrata con data.

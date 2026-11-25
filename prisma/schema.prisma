@@ -42,6 +42,7 @@ model Variant {
   priceCents Int // 1990 = 19,90 €
   stock      Int     @default(0)
   cartItems  CartItem[]
+  orderItems OrderItem[]
 }
 
 // ─── Lezione 2: carrello ───────────────────────────────────────────────
@@ -67,4 +68,56 @@ model CartItem {
   // (L'ordine invece lo "congelerà": Lezione 3.)
 
   @@unique([cartId, variantId]) // una riga per variante: se la riaggiungi, cresce la quantità
+}
+
+// ─── Lezione 3: ordini ─────────────────────────────────────────────────
+// Un ordine è un DOCUMENTO STORICO: deve restare identico per sempre,
+// anche se domani cambi prezzi, nomi o cancelli prodotti.
+// Per questo COPIA ("snapshot") tutti i dati invece di collegarsi a essi.
+model Order {
+  id       Int    @id @default(autoincrement()) // numero d'ordine interno: #000001
+  publicId String @unique @default(cuid()) // usato negli URL: non indovinabile
+  // Stati: PENDING_PAYMENT → PAID → SHIPPED → DELIVERED  (oppure CANCELLED)
+  // SQLite non ha gli enum: usiamo una stringa e i tipi TypeScript in lib/orders.ts
+  status   String @default("PENDING_PAYMENT")
+
+  // Dati del cliente copiati nell'ordine (checkout come ospite, senza account)
+  email      String
+  firstName  String
+  lastName   String
+  address    String
+  postalCode String
+  city       String
+  province   String
+  country    String  @default("IT")
+  phone      String?
+
+  // Totali congelati al momento dell'ordine, in centesimi
+  subtotalCents Int
+  shippingCents Int
+  totalCents    Int
+  vatCents      Int // IVA inclusa nel totale (serve per la fattura)
+
+  termsAcceptedAt DateTime // prova legale che il cliente ha accettato le condizioni
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id      Int   @id @default(autoincrement())
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Collegamento "debole" alla variante: utile per le statistiche,
+  // ma se la variante viene cancellata l'ordine resta valido (SetNull).
+  variantId Int?
+  variant   Variant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  // SNAPSHOT: copia dei dati com'erano al momento dell'acquisto
+  productName    String
+  variantName    String
+  sku            String
+  unitPriceCents Int
+  quantity       Int
 }

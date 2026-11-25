@@ -5,6 +5,8 @@ const db = new PrismaClient();
 
 async function main() {
   // Ordine inverso rispetto alle relazioni, altrimenti le chiavi esterne bloccano la cancellazione
+  await db.orderItem.deleteMany();
+  await db.order.deleteMany();
   await db.cartItem.deleteMany();
   await db.cart.deleteMany();
   await db.variant.deleteMany();

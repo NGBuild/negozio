@@ -68,8 +68,11 @@ export default async function CartPage() {
           <div className="row"><span>Subtotale</span><strong>{formatPrice(cartSubtotal(cart))}</strong></div>
           <p className="muted">Spedizione calcolata al checkout. Prezzi IVA inclusa.</p>
           {problems.length > 0 && <p className="notice error">Correggi gli articoli segnalati per procedere.</p>}
-          <button className="btn" disabled title="Arriva nella Lezione 3">Procedi al checkout</button>
-          <p className="muted small">Il checkout arriva nella Lezione 3 🙂</p>
+          {problems.length > 0 ? (
+            <button className="btn btn-block" disabled>Procedi al checkout</button>
+          ) : (
+            <Link href="/checkout" className="btn btn-block">Procedi al checkout</Link>
+          )}
         </aside>
       </div>
     </>
